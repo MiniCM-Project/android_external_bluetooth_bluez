@@ -26,6 +26,7 @@
 
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/sdp.h>
+#include <dbus/dbus.h>
 
 #define BASE_PATH		"/org/bluez"
 
@@ -40,15 +41,6 @@ struct service_data {
 	service_handler_func_t	handler_func;
 };
 
-typedef void (*name_cb_t)(const char *name, void *user_data);
-
-int name_listener_add(DBusConnection *connection, const char *name,
-				name_cb_t func, void *user_data);
-int name_listener_remove(DBusConnection *connection, const char *name,
-				name_cb_t func, void *user_data);
-
-DBusHandlerResult simple_introspect(DBusConnection *conn, DBusMessage *msg, void *data);
-
 service_handler_func_t find_service_handler(struct service_data *services, DBusMessage *msg);
 
 int str2uuid(uuid_t *uuid, const char *string);
@@ -57,16 +49,10 @@ int l2raw_connect(const char *local, const bdaddr_t *remote);
 
 int check_address(const char *addr);
 
-static inline DBusHandlerResult send_message_and_unref(DBusConnection *conn, DBusMessage *msg)
-{
-	if (msg) {
-		dbus_connection_send(conn, msg, NULL);
-		dbus_message_unref(msg);
-	}
-
-	return DBUS_HANDLER_RESULT_HANDLED;
-}
-
 DBusHandlerResult handle_method_call(DBusConnection *conn, DBusMessage *msg, void *data);
+
+void hcid_dbus_exit(void);
+
+int hcid_dbus_init(void);
 
 #endif /* __BLUEZ_DBUS_COMMON_H */
