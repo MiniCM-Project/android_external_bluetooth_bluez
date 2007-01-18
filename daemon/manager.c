@@ -27,16 +27,13 @@
 
 #include <dbus/dbus.h>
 
-#include "logging.h"
-#include "dbus.h"
-
 #include "dbus-helper.h"
+#include "logging.h"
 
+#include "system.h"
 #include "manager.h"
 
 #define MANAGER_INTERFACE "org.bluez.Manager"
-
-#define MANAGER_PATH "/org/bluez"
 
 static DBusConnection *connection = NULL;
 
@@ -60,7 +57,7 @@ static DBusHandlerResult list_adapters(DBusConnection *conn,
 
 	dbus_message_iter_close_container(&iter, &array);
 
-	return send_message_and_unref(conn, reply);
+	return dbus_connection_send_and_unref(conn, reply);
 }
 
 static DBusHandlerResult find_adapter(DBusConnection *conn,
@@ -76,7 +73,7 @@ static DBusHandlerResult find_adapter(DBusConnection *conn,
 	dbus_message_append_args(reply, DBUS_TYPE_STRING, &ptr,
 					DBUS_TYPE_INVALID);
 
-	return send_message_and_unref(conn, reply);
+	return dbus_connection_send_and_unref(conn, reply);
 }
 
 static DBusHandlerResult default_adapter(DBusConnection *conn,
@@ -92,7 +89,7 @@ static DBusHandlerResult default_adapter(DBusConnection *conn,
 	dbus_message_append_args(reply, DBUS_TYPE_STRING, &ptr,
 					DBUS_TYPE_INVALID);
 
-	return send_message_and_unref(conn, reply);
+	return dbus_connection_send_and_unref(conn, reply);
 }
 
 static DBusMethodVTable manager_table[] = {
@@ -111,17 +108,9 @@ int manager_init(DBusConnection *conn)
 
 	info("Starting manager interface");
 
-	if (dbus_connection_create_object_path(connection,
-					MANAGER_PATH, NULL, NULL) == FALSE) {
-		error("Manager path registration failed");
-		dbus_connection_unref(connection);
-		return -1;
-	}
-
-	if (dbus_connection_register_interface(connection, MANAGER_PATH,
+	if (dbus_connection_register_interface(connection, SYSTEM_PATH,
 			MANAGER_INTERFACE, manager_table, NULL) == FALSE) {
 		error("Manager interface registration failed");
-		dbus_connection_destroy_object_path(connection, MANAGER_PATH);
 		dbus_connection_unref(connection);
 		return -1;
 	}
@@ -132,8 +121,6 @@ int manager_init(DBusConnection *conn)
 void manager_exit(void)
 {
 	info("Stopping manager interface");
-
-	dbus_connection_destroy_object_path(connection, MANAGER_PATH);
 
 	dbus_connection_unref(connection);
 
