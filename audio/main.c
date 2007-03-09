@@ -2,7 +2,7 @@
  *
  *  BlueZ - Bluetooth protocol stack for Linux
  *
- *  Copyright (C) 2005-2006  Marcel Holtmann <marcel@holtmann.org>
+ *  Copyright (C) 2004-2007  Marcel Holtmann <marcel@holtmann.org>
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,13 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include "manager.h"
+
 int main(int argc, char *argv[])
 {
+	audio_init();
+
+	audio_exit();
+
 	return 0;
 }
