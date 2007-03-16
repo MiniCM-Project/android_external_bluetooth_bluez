@@ -66,10 +66,10 @@ int main(int argc, char *argv[])
 	/* Create event loop */
 	main_loop = g_main_loop_new(NULL, FALSE);
 
-	network_init();
-
 	if (argc > 1 && !strcmp(argv[1], "-s"))
 		internal_service("network");
+
+	network_init();
 
 	g_main_loop_run(main_loop);
 
