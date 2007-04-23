@@ -30,6 +30,8 @@
 
 #include "logging.h"
 
+#include "manager.h"
+
 static void sig_term(int sig)
 {
 }
