@@ -25,18 +25,24 @@
 #include <config.h>
 #endif
 
-#include <stdint.h>
+#include "gsta2dpsink.h"
 
-#include <gst/gst.h>
-
-#include "ipc.h"
-#include "sbc.h"
+GST_DEBUG_CATEGORY(bluetooth_debug);
 
 static gboolean plugin_init(GstPlugin *plugin)
 {
+	GST_INFO("Bluetooth plugin %s", VERSION);
+
+	if (gst_element_register(plugin, "a2dpsink",
+			GST_RANK_PRIMARY, GST_TYPE_A2DP_SINK) == FALSE)
+		return FALSE;
+
+	GST_DEBUG_CATEGORY_INIT(bluetooth_debug, "bluetooth", 0,
+							"Bluetooth plugin");
+
 	return TRUE;
 }
 
 GST_PLUGIN_DEFINE(GST_VERSION_MAJOR, GST_VERSION_MINOR,
 	"bluetooth", "Bluetooth plugin library",
-	plugin_init, VERSION, "LGPL", PACKAGE, "http://www.bluez.org/")
+	plugin_init, VERSION, "LGPL", "BlueZ", "http://www.bluez.org/")
