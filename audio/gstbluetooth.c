@@ -25,20 +25,25 @@
 #include <config.h>
 #endif
 
+#include "gstsbcenc.h"
+#include "gstsbcdec.h"
 #include "gsta2dpsink.h"
-
-GST_DEBUG_CATEGORY(bluetooth_debug);
 
 static gboolean plugin_init(GstPlugin *plugin)
 {
 	GST_INFO("Bluetooth plugin %s", VERSION);
 
+	if (gst_element_register(plugin, "sbcenc",
+			GST_RANK_NONE, GST_TYPE_SBC_ENC) == FALSE)
+		return FALSE;
+
+	if (gst_element_register(plugin, "sbcdec",
+			GST_RANK_PRIMARY, GST_TYPE_SBC_DEC) == FALSE)
+		return FALSE;
+
 	if (gst_element_register(plugin, "a2dpsink",
 			GST_RANK_PRIMARY, GST_TYPE_A2DP_SINK) == FALSE)
 		return FALSE;
-
-	GST_DEBUG_CATEGORY_INIT(bluetooth_debug, "bluetooth", 0,
-							"Bluetooth plugin");
 
 	return TRUE;
 }
